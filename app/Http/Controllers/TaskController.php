@@ -1,65 +1,46 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Task;
+use App\Repositories\TaskRepository;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $taskRepository;
+
+    public function __construct(TaskRepository $taskRepository)
     {
-        //
+        $this->taskRepository = $taskRepository;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index($projectId)
     {
-        //
+        return response()->json($this->taskRepository->getTasksByProject($projectId));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'name' => 'required',
+            'description' => 'nullable',
+            'status' => 'required|in:todo,in-progress,done',
+        ]);
+        return response()->json($this->taskRepository->createTask($data));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Task $task)
+    public function update(Request $request, $id)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'description' => 'nullable',
+            'status' => 'required|in:todo,in-progress,done',
+        ]);
+        return response()->json($this->taskRepository->updateTask($id, $data));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Task $task)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Task $task)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Task $task)
-    {
-        //
+        return response()->json($this->taskRepository->deleteTask($id));
     }
 }

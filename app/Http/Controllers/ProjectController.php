@@ -1,65 +1,42 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Project;
+use App\Repositories\ProjectRepository;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $projectRepository;
+
+    public function __construct(ProjectRepository $projectRepository)
+    {
+        $this->projectRepository = $projectRepository;
+    }
+
     public function index()
     {
-        //
+        return response()->json($this->projectRepository->getAllProjects());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate(['name' => 'required', 'description' => 'nullable']);
+        return response()->json($this->projectRepository->createProject($data));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Project $project)
+    public function show($id)
     {
-        //
+        return response()->json($this->projectRepository->getProjectById($id));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Project $project)
+    public function update(Request $request, $id)
     {
-        //
+        $data = $request->validate(['name' => 'required', 'description' => 'nullable']);
+        return response()->json($this->projectRepository->updateProject($id, $data));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Project $project)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Project $project)
-    {
-        //
+        return response()->json($this->projectRepository->deleteProject($id));
     }
 }
