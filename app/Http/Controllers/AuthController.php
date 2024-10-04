@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+
     // Log in a user and return an API token
     public function login(Request $request)
     {
